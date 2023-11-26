@@ -1,75 +1,109 @@
 java code
 
 
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.currencyconverter;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class MainActivity extends AppCompatActivity {
 
-    Spinner planetsSpinner;
-    EditText amountEditText;
-    Button convertButton;
-    TextView resultTextView;
+    private Spinner spinnerFrom, spinnerTo;
+    private EditText editTextAmount;
+    private Button btnConvert;
+    private TextView textViewResult;
+
+    // Conversion rates (dummy values, replace with actual rates)
+    private double inrToUsdRate = 0.014;
+    private double inrToEurRate = 0.012;
+    private double usdToInrRate = 72.0;
+    private double usdToEurRate = 0.85;
+    private double eurToInrRate = 80.0;
+    private double eurToUsdRate = 1.18;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        planetsSpinner = findViewById(R.id.planets_spinner);
-        amountEditText = findViewById(R.id.editText4);
-        convertButton = findViewById(R.id.button);
-        resultTextView = findViewById(R.id.textView7);
+        spinnerFrom = findViewById(R.id.spinnerFrom);
+        spinnerTo = findViewById(R.id.spinnerTo);
+        editTextAmount = findViewById(R.id.editTextAmount);
+        btnConvert = findViewById(R.id.btnConvert);
+        textViewResult = findViewById(R.id.textViewResult);
 
-        // Create an ArrayAdapter for the spinner
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.currencies, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        planetsSpinner.setAdapter(adapter);
 
-        convertButton.setOnClickListener(new View.OnClickListener() {
+        spinnerFrom.setAdapter(adapter);
+        spinnerTo.setAdapter(adapter);
+
+        btnConvert.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                // Get the selected currency and amount
-                String selectedCurrency = planetsSpinner.getSelectedItem().toString();
-                double amount = Double.parseDouble(amountEditText.getText().toString());
-
-                // Perform currency conversion here
-                double convertedValue = performConversion(selectedCurrency, amount);
-
-                // Display the result in the TextView
-                resultTextView.setText("Result: " + convertedValue);
+            public void onClick(View view) {
+                convertCurrency();
             }
         });
     }
 
-    // Implement your currency conversion logic here
-    private double performConversion(String currency, double amount) {
-        // You should implement your currency conversion logic based on the selected currency.
-        // For simplicity, let's assume a fixed conversion rate for INR to other currencies.
+    private void convertCurrency() {
+        // Get the selected currencies
+        String currencyFrom = spinnerFrom.getSelectedItem().toString();
+        String currencyTo = spinnerTo.getSelectedItem().toString();
 
-        double inrToUsdRate = 0.014; // 1 INR to USD
-        double inrToEuroRate = 0.012; // 1 INR to Euro
-        double inrToGbpRate = 0.011; // 1 INR to GBP
-
-        double convertedValue = 0.0;
-
-        if (currency.equals("USD")) {
-            convertedValue = amount * inrToUsdRate;
-        } else if (currency.equals("Euro")) {
-            convertedValue = amount * inrToEuroRate;
-        } else if (currency.equals("British Pound")) {
-            convertedValue = amount * inrToGbpRate;
+        // Get the amount to convert
+        String amountString = editTextAmount.getText().toString();
+        if (amountString.isEmpty()) {
+            textViewResult.setText("Please enter an amount.");
+            return;
         }
 
-        return convertedValue;
+        double amount = Double.parseDouble(amountString);
+
+        // Perform the conversion
+        double result = performConversion(amount, currencyFrom, currencyTo);
+
+        // Display the result
+        String resultString = String.format("%.2f %s = %.2f %s", amount, currencyFrom, result, currencyTo);
+        textViewResult.setText(resultString);
+    }
+
+    private double performConversion(double amount, String fromCurrency, String toCurrency) {
+        // Replace with actual conversion logic or API call
+        double rate = 1.0; // Default to 1:1 conversion for the same currency
+
+        if ("INR".equals(fromCurrency)) {
+            if ("USD".equals(toCurrency)) {
+                rate = inrToUsdRate;
+            } else if ("EUR".equals(toCurrency)) {
+                rate = inrToEurRate;
+            }
+        } else if ("USD".equals(fromCurrency)) {
+            if ("INR".equals(toCurrency)) {
+                rate = usdToInrRate;
+            } else if ("EUR".equals(toCurrency)) {
+                rate = usdToEurRate;
+            }
+        } else if ("EUR".equals(fromCurrency)) {
+            if ("INR".equals(toCurrency)) {
+                rate = eurToInrRate;
+            } else if ("USD".equals(toCurrency)) {
+                rate = eurToUsdRate;
+            }
+        }
+
+        return amount * rate;
     }
 }
+
 
 
 
@@ -77,97 +111,65 @@ public class MainActivity extends AppCompatActivity {
 //xml code
 
 
-
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/title"
+    <Spinner
+        android:id="@+id/spinnerFrom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:text="Currency Converter"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/title"
-        android:layout_marginStart="41dp"
-        android:layout_marginLeft="41dp"
-        android:layout_marginTop="32dp"
-        android:text="INR" />
+        android:entries="@array/currencies" />
 
     <EditText
-        android:id="@+id/editText4"
-        android:layout_width="wrap_content"
+        android:id="@+id/editTextAmount"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView4"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="number" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editText4"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="16dp"
-        android:text="Currency" />
+        android:layout_below="@id/spinnerFrom"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:inputType="numberDecimal"
+        android:hint="Enter Amount" />
 
     <Spinner
-        android:id="@+id/planets_spinner"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView5"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp" />
-
-    <Button
-        android:id="@+id/button"
+        android:id="@+id/spinnerTo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/planets_spinner"
+        android:layout_below="@id/editTextAmount"
+        android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
+        android:entries="@array/currencies" />
+
+    <Button
+        android:id="@+id/btnConvert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerTo"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
         android:text="Convert" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/textViewResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button"
+        android:layout_below="@id/btnConvert"
+        android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="Value" />
+        android:text="Result: " />
 
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button"
-        android:layout_toEndOf="@+id/textView5"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="Result" />
 </RelativeLayout>
 
 
 stings code
 
 <string-array name="currencies">
-            <item>USD</item>
-            <item>EUR</item>
-            <item>GBP</item>
+        <item>INR</item>
+        <item>USD</item>
+        <item>EUR</item>
         </string-array>
