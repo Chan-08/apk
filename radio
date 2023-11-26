@@ -1,0 +1,134 @@
+java code
+
+package com.example.radio;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText editTextLength;
+    private RadioGroup radioGroupUnits;
+    private TextView textViewResult;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextLength = findViewById(R.id.editTextLength);
+        radioGroupUnits = findViewById(R.id.radioGroupUnits);
+        textViewResult = findViewById(R.id.textViewResult);
+    }
+
+    public void convertLength(View view) {
+        try {
+            double length = Double.parseDouble(editTextLength.getText().toString());
+
+            int selectedId = radioGroupUnits.getCheckedRadioButtonId();
+            RadioButton selectedRadioButton = findViewById(selectedId);
+
+            String selectedUnit = selectedRadioButton.getText().toString();
+            double convertedLength;
+
+            switch (selectedUnit) {
+                case "Meters":
+                    convertedLength = length;
+                    break;
+                case "Centimeters":
+                    convertedLength = length / 100;
+                    break;
+                case "Inches":
+                    convertedLength = length / 39.37;
+                    break;
+                default:
+                    convertedLength = length;
+            }
+
+            textViewResult.setText(String.format("%.2f %s is %.2f Meters", length, selectedUnit, convertedLength));
+        } catch (NumberFormatException e) {
+            textViewResult.setText("Invalid input. Please enter a valid length.");
+        }
+    }
+}
+
+
+xml code
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40dp"
+        android:textAlignment="center"
+        android:text="Unit converter "/>
+
+
+    <EditText
+        android:id="@+id/editTextLength"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter length want to convert into meter"
+        android:layout_marginTop="100dp"
+        android:inputType="numberDecimal"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupUnits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextLength"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radioButtonMeters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Meters"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonCentimeters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Centimeters"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonInches"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inches"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnConvert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/radioGroupUnits"
+        android:layout_marginTop="32dp"
+        android:onClick="convertLength"
+        android:text="Convert"
+        android:layout_marginLeft="150dp"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/textViewResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnConvert"
+        android:layout_marginTop="16dp"/>
+
+</RelativeLayout>
